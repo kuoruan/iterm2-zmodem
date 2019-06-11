@@ -81,7 +81,7 @@ recv_file() {
 			tell application "iTerm2"
 				activate
 				set folderPath to (choose folder with prompt "Select a folder to receive files")
-				do shell script "echo " & (quoted form of POSIX path of folderPath as Unicode text)
+				do shell script "echo " & (quoted form of POSIX path of folderPath as Unicode text) & " | sed 's|:/$|/|'"
 			end tell
 		EOF
 	)"
