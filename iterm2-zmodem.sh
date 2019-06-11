@@ -59,7 +59,7 @@ send_file() {
 		alert "Transfer canceled." "Send File to Remote"
 		echo
 	else
-		if "$sz_cmd" "$file_path" -E -e -b 2>/dev/null ; then
+		if "$sz_cmd" "$file_path" -E -e 2>/dev/null ; then
 			alert "File sent to remote: $file_path" "Send File to Remote" "note"
 			echo
 		else
@@ -98,7 +98,7 @@ recv_file() {
 		echo
 	else
 		cd "$folder_path"
-		if "$rz_cmd" -E -e -b 2>/dev/null ; then
+		if "$rz_cmd" -E -e 2>/dev/null ; then
 			alert "Files saved to folder: $folder_path" "Receive File from Remote" "note"
 			echo
 		else
