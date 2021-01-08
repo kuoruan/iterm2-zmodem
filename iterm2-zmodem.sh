@@ -20,15 +20,18 @@
 
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
+SEND_DIALOG_TITLE="Send File - Zmodem"
+RECEIVE_DIALOG_TITLE="Receive File - Zmodem"
+
 cancel_zmodem() {
 	# Send ZModem cancel
-	printf "%b" "\\x18\\x18\\x18\\x18\\x18"
+	printf "\x18\x18\x18\x18\x18"
 }
 
 alert() {
-	local msg="$1"
-	local title="${2:-$(basename $0)}"
-	local icon="${3:-caution}"
+	msg="$1"
+	title="${2:-$(basename "$0")}"
+	icon="${3:-caution}" # stop | note | caution
 
 	osascript <<-EOF 2>/dev/null
 		tell application "iTerm2"
@@ -40,9 +43,6 @@ alert() {
 }
 
 send_file() {
-	local sz_cmd="$1"
-
-	local file_path=""
 	file_path="$(
 		osascript <<-EOF 2>/dev/null
 			tell application "iTerm2"
@@ -56,31 +56,32 @@ send_file() {
 	if [ -z "$file_path" ]; then
 		cancel_zmodem
 
-		alert "Transfer canceled." "Send File to Remote"
+		sleep 1 # sleep to make next "echo" works
+
+		echo
+		exit 0
+	fi
+
+	if sz "$file_path" -b -B 4096 -e -E 2>/dev/null ; then
+		alert "File sent to remote: $file_path" "$SEND_DIALOG_TITLE" "note"
+
 		echo
 	else
-		if "$sz_cmd" "$file_path" -b -B 4096 -e -E 2>/dev/null ; then
-			alert "File sent to remote: $file_path" "Send File to Remote" "note"
-			echo
-		else
-			cancel_zmodem
+		cancel_zmodem
 
-			alert "Transfer failed when send file: $file_path" "Send File to Remote" "stop"
-			echo
-			exit 1
-		fi
+		alert "Transfer failed when send file: $file_path" "$SEND_DIALOG_TITLE" "stop"
+
+		echo
+		exit 1
 	fi
 }
 
 recv_file() {
-	local rz_cmd="$1"
-
-	local folder_path=""
 	folder_path="$(
 		osascript <<-EOF 2>/dev/null
 			tell application "iTerm2"
 				activate
-				set folderPath to (choose folder with prompt "Select a folder to receive files")
+				set folderPath to (choose folder with prompt "Select a folder to receive file")
 				do shell script "echo " & (quoted form of POSIX path of folderPath as Unicode text) & " | sed 's|:/$|/|'"
 			end tell
 		EOF
@@ -89,22 +90,40 @@ recv_file() {
 	if [ -z "$folder_path" ] ; then
 		cancel_zmodem
 
-		alert "Canceled transfer" "Receive File from Remote"
+		sleep 1
+
 		echo
-	elif [ ! -d "$folder_path" ] ; then
+		exit 0
+	fi
+
+	if [ ! -d "$folder_path" ] ; then
 		cancel_zmodem
 
-		alert "Can't open local folder: $folder_path" "Receive File from Remote" "stop"
+		alert "Can't find local folder: $folder_path" "$RECEIVE_DIALOG_TITLE" "stop"
+
 		echo
+		exit 1
 	else
-		cd "$folder_path"
-		if "$rz_cmd" -b -B 4096 -e -E 2>/dev/null ; then
-			alert "Files saved to folder: $folder_path" "Receive File from Remote" "note"
+		if ! cd "$folder_path" ; then
+			cancel_zmodem
+
+			alert "Can't open local folder: $folder_path" "$RECEIVE_DIALOG_TITLE" "stop"
+
+			echo
+			exit 1
+		fi
+
+		if rz -b -B 4096 -e -E 2>/dev/null ; then
+			cd - || true
+
+			alert "File saved to local folder: $folder_path" "$RECEIVE_DIALOG_TITLE" "note"
+
 			echo
 		else
 			cancel_zmodem
 
-			alert "Transfer failed when recevie file" "Receive File from Remote" "stop"
+			alert "Transfer failed when recevie file" "$RECEIVE_DIALOG_TITLE" "stop"
+
 			echo
 			exit 1
 		fi
@@ -113,29 +132,32 @@ recv_file() {
 
 action=${1:-"noop"}
 if [ "$action" = "send" ] ; then
-	cmd="$(command -v sz 2>/dev/null)"
-	if [ "$?" != "0" ] || [ -z "$cmd" ] ; then
+	if ! command -v sz 2>/dev/null ; then
 		cancel_zmodem
 
 		alert "Command not found: sz"
+
 		echo
 		exit 127
 	fi
-	send_file "$cmd"
+
+	send_file
 elif [ "$action" = "recv" ] ; then
-	cmd="$(command -v rz 2>/dev/null)"
-	if [ "$?" != "0" ] || [ -z "$cmd" ] ; then
+	if ! command -v rz 2>/dev/null ; then
 		cancel_zmodem
 
 		alert "Command not found: rz"
+
 		echo
 		exit 127
 	fi
-	recv_file "$cmd"
+
+	recv_file
 else
 	cancel_zmodem
 
-	alert "Usage: $(basename $0) recv|send"
+	alert "Usage: $(basename "$0") recv|send"
+
 	echo
 	exit 128
 fi
