@@ -53,7 +53,7 @@ send_file() {
 		EOF
 	)"
 
-	if [ -z "$file_path" ]; then
+	if [ -z "$file_path" ] ; then
 		cancel_zmodem
 
 		sleep 1 # sleep to make next "echo" works
