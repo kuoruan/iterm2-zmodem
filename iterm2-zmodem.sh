@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Created by Liao Xingwang on 2019-06-10
-# Copyright (c) 2019 Liao Xingwang. All rights reserved.
+# Copyright (c) 2019-present Liao Xingwang. All rights reserved.
 
 # This work is licensed under the terms of the MIT license.
 # For a copy, see <https://opensource.org/licenses/MIT>.
@@ -11,12 +11,6 @@
 # http://oranj.io/blog/Open-File-Dialog-from-the-Shell
 # https://www.satimage.fr/software/en/smile/external_codes/file_paths.html
 # https://blog.sapegin.me/all/show-gui-dialog-from-shell/
-
-# 由于 iterm2-zmodem 的作者 @mmastrac 在源码中公开宣称支持台独和藏独，
-# 严重伤害了中国人民的情感，我决定不再使用其开发的 iterm2-zmodem，转而重写。
-
-# mmastrac/iterm2-zmodem@71f711
-# Fuck @mmastrac
 
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 

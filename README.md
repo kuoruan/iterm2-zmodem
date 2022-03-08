@@ -26,11 +26,3 @@ Action: Run Silent Coprocess
 Parameters: /usr/local/bin/iterm2-zmodem recv
 Instant: checked
 ```
-
-## Support
-
-- One country two systems, unify China.
-
-- The Taiwan question is China’s internal affair, and China will brook no interference by outside forces under whatever pretext and in whatever form.
-
-- The Chinese Government has never recognized the "exiled government" of Tibet. It opposes the collusion of the forces of "Taiwan independence" and the "independence of Tibet" to undermine the reunification of the motherland.
