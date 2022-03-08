@@ -6,6 +6,10 @@ Zmodem for iTerm2
 
 1. Install lrzsz.
 
+```sh
+brew install lrzsz
+```
+
 2. Save ```iterm2-zmodem.sh``` to your PATH
 
 ```sh
