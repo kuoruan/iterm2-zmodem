@@ -12,7 +12,7 @@
 # https://www.satimage.fr/software/en/smile/external_codes/file_paths.html
 # https://blog.sapegin.me/all/show-gui-dialog-from-shell/
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
 SEND_DIALOG_TITLE="Send File - Zmodem"
 RECEIVE_DIALOG_TITLE="Receive File - Zmodem"
